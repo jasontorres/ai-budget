@@ -1,0 +1,517 @@
+/* =============================================================
+   A Budget for the Future — editorial restyle
+   Palette: cream / charcoal / muted oxblood + deep slate
+   Type: Antonio (condensed display sans) + Source Serif (body)
+            + Inter Tight (UI) + JetBrains Mono (labels)
+   ============================================================= */
+
+:root {
+  /* Editorial cream + ink */
+  --paper: #f4f0e8;
+  --paper-warm: #ece6d6;
+  --paper-deep: #ddd4bd;
+  --ink: #16140f;
+  --ink-2: #2a261d;
+  --ink-3: #5a5446;
+  --ink-mute: #8a8470;
+  --rule: #cbc1a8;
+  --rule-soft: #e2dcc8;
+
+  /* Restrained civic accents */
+  --accent: #8a2418;        /* muted oxblood */
+  --accent-deep: #5e1810;
+  --accent-soft: #d8b8a8;
+  --slate: #2d3e4f;         /* deep editorial slate */
+  --slate-deep: #1a2935;
+  --slate-soft: #b0bcc8;
+  --leaf: #4a5a3a;          /* moss, not bright green */
+  --leaf-deep: #2f3826;
+  --ochre: #9a7530;         /* mustard, used SPARINGLY */
+
+  /* Sequence — editorial cream-to-slate */
+  --stage-1: #e2dcc8;
+  --stage-2: #c8bea0;
+  --stage-3: #9a7530;
+  --stage-4: #6a5530;
+  --stage-5: #b0bcc8;
+  --stage-6: #2d3e4f;
+  --stage-7: #1a2935;
+
+  /* Typography overrides — "PesoFix" prepended so U+20B1 (peso glyph)
+     never falls into the italic Source Serif. The unicode-range
+     @font-face is declared in narrative.css. */
+  --font-display: "PesoFix", "Antonio", "Bebas Neue", "Oswald", "Impact", sans-serif;
+  --font-hero: "PesoFix", "Antonio", "Bebas Neue", "Oswald", sans-serif;
+  --font-serif: "PesoFix", "Source Serif 4", "Source Serif Pro", "Charter", Georgia, serif;
+  --font-body: "PesoFix", "Source Serif 4", "Charter", Georgia, serif;
+  --font-ui: "PesoFix", "Inter Tight", -apple-system, sans-serif;
+  --font-mono: "PesoFix", "JetBrains Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* ---------- Typography overrides — condensed display sans ---------- */
+.h-display, .h-1, .h-2, .h-sans-huge, .giant-num {
+  font-family: var(--font-display) !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: uppercase !important;
+  line-height: 0.92 !important;
+}
+.h-display { font-size: clamp(64px, 9vw, 144px) !important; }
+.h-1 { font-size: clamp(48px, 6vw, 96px) !important; font-weight: 500 !important; }
+.h-2 { font-size: clamp(36px, 4.5vw, 64px) !important; font-weight: 500 !important; }
+.h-sans-huge { font-size: clamp(96px, 14vw, 220px) !important; font-weight: 700 !important; letter-spacing: -0.02em !important; }
+.giant-num { font-size: clamp(120px, 18vw, 280px) !important; font-weight: 700 !important; letter-spacing: -0.02em !important; }
+
+/* No italic styling on display */
+.h-display .up, .h-1 .up, .h-2 .up { font-style: normal !important; }
+
+/* Pull-quote — keep serif, italic for editorial pull */
+.pull {
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  font-size: clamp(28px, 3.6vw, 56px) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.01em !important;
+}
+.pull .em { font-style: italic !important; font-weight: 600 !important; color: var(--accent) !important; }
+
+/* Lede — serif body */
+.lede {
+  font-family: var(--font-serif) !important;
+  font-size: clamp(19px, 1.6vw, 24px) !important;
+  line-height: 1.5 !important;
+  font-weight: 400 !important;
+  color: var(--ink-2) !important;
+}
+
+.body {
+  font-family: var(--font-serif) !important;
+  font-size: 18px !important;
+  line-height: 1.62 !important;
+  color: var(--ink-2) !important;
+}
+
+/* Eyebrow — small UI sans */
+.eyebrow {
+  font-family: var(--font-ui) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+}
+.eyebrow .num {
+  font-family: var(--font-mono) !important;
+  background: var(--accent) !important;
+  color: var(--paper) !important;
+  padding: 4px 8px !important;
+  margin-right: 12px !important;
+}
+
+.kicker {
+  font-family: var(--font-ui) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  color: var(--ink-3) !important;
+}
+
+/* Stat strip — editorial slab */
+.stat-strip {
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.stat-strip .label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.stat-strip .num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* Fig caption */
+.fig-caption {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+
+/* ---------- Scene backgrounds ---------- */
+.bg-paper { background: var(--paper); }
+.bg-paper-warm { background: var(--paper-warm); }
+.bg-paper-deep { background: var(--paper-deep); }
+.bg-cream { background: #faf6ec; }
+.bg-ink { background: var(--ink); color: var(--paper); }
+.bg-slate { background: var(--slate); color: var(--paper); }
+.bg-slate-deep { background: var(--slate-deep); color: var(--paper); }
+.bg-sky { background: var(--slate); color: var(--paper); }       /* remap */
+.bg-sky-deep { background: var(--slate-deep); color: var(--paper); }  /* remap */
+.bg-leaf { background: var(--leaf-deep); color: var(--paper); }
+.bg-rose { background: var(--accent-deep); color: var(--paper); }
+.bg-accent { background: var(--accent); color: var(--paper); }
+/* Future-only override: remap gold scenes to cream paper. Scoped so
+   Review's section 10 (bg-gold) keeps its dark-brown background. */
+.future-page .bg-gold { background: var(--paper); color: var(--ink); }
+
+/* Color treatments on dark backgrounds */
+.bg-ink .h-1, .bg-ink .h-2, .bg-ink .h-display, .bg-ink .h-sans-huge, .bg-ink .giant-num,
+.bg-slate .h-1, .bg-slate .h-2, .bg-slate .h-display, .bg-slate .h-sans-huge, .bg-slate .giant-num,
+.bg-slate-deep .h-1, .bg-slate-deep .h-2, .bg-slate-deep .h-display, .bg-slate-deep .h-sans-huge, .bg-slate-deep .giant-num,
+.bg-leaf .h-1, .bg-leaf .h-2, .bg-leaf .h-display,
+.bg-rose .h-1, .bg-rose .h-2, .bg-rose .h-display,
+.bg-accent .h-1, .bg-accent .h-2, .bg-accent .h-display { color: var(--paper) !important; }
+
+.bg-ink .lede, .bg-slate .lede, .bg-slate-deep .lede, .bg-leaf .lede, .bg-rose .lede, .bg-accent .lede { color: var(--paper-warm) !important; opacity: 0.92; }
+.bg-ink .body, .bg-slate .body, .bg-slate-deep .body, .bg-leaf .body, .bg-rose .body, .bg-accent .body { color: var(--paper-warm) !important; opacity: 0.85; }
+
+.bg-ink .eyebrow, .bg-slate .eyebrow, .bg-slate-deep .eyebrow, .bg-leaf .eyebrow, .bg-rose .eyebrow, .bg-accent .eyebrow { color: var(--accent-soft) !important; }
+.bg-ink .eyebrow .num, .bg-slate .eyebrow .num, .bg-slate-deep .eyebrow .num, .bg-leaf .eyebrow .num, .bg-rose .eyebrow .num, .bg-accent .eyebrow .num { background: rgba(255,255,255,0.18) !important; color: #fff !important; }
+
+.bg-ink .kicker, .bg-slate .kicker, .bg-slate-deep .kicker, .bg-leaf .kicker, .bg-rose .kicker, .bg-accent .kicker { color: var(--paper-warm) !important; opacity: 0.7; }
+
+.bg-ink .stat-strip, .bg-slate .stat-strip, .bg-slate-deep .stat-strip, .bg-leaf .stat-strip, .bg-rose .stat-strip, .bg-accent .stat-strip {
+  border-top-color: rgba(255,255,255,0.22);
+  border-bottom-color: rgba(255,255,255,0.22);
+}
+.bg-ink .stat-strip .cell, .bg-slate .stat-strip .cell, .bg-slate-deep .stat-strip .cell, .bg-leaf .stat-strip .cell, .bg-rose .stat-strip .cell, .bg-accent .stat-strip .cell {
+  border-right-color: rgba(255,255,255,0.18);
+}
+.bg-ink .stat-strip .label, .bg-slate .stat-strip .label, .bg-slate-deep .stat-strip .label, .bg-leaf .stat-strip .label, .bg-rose .stat-strip .label, .bg-accent .stat-strip .label { color: var(--paper-warm) !important; opacity: 0.7; }
+.bg-ink .stat-strip .num, .bg-slate .stat-strip .num, .bg-slate-deep .stat-strip .num, .bg-leaf .stat-strip .num, .bg-rose .stat-strip .num, .bg-accent .stat-strip .num { color: var(--paper) !important; }
+
+.bg-ink .fig-caption, .bg-slate .fig-caption, .bg-slate-deep .fig-caption, .bg-leaf .fig-caption, .bg-rose .fig-caption, .bg-accent .fig-caption { color: var(--paper-warm) !important; opacity: 0.6; }
+
+/* Pull-quote em on dark */
+.bg-ink .pull .em, .bg-slate-deep .pull .em, .bg-leaf .pull .em { color: var(--accent-soft) !important; }
+.bg-rose .pull .em, .bg-accent .pull .em { color: var(--paper) !important; }
+
+/* ---------- Image treatments — editorial duotone ---------- */
+.fig.duotone { background: var(--slate-deep); }
+.fig.duotone img {
+  filter: grayscale(0.95) contrast(1.08) brightness(0.88);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+.fig.gold.duotone { background: var(--accent-deep); }
+.fig.leaf.duotone { background: var(--leaf-deep); }
+.fig.rose.duotone { background: var(--accent-deep); }
+.fig.tinted { background: var(--ink); }
+.fig.tinted img {
+  filter: grayscale(0.9) contrast(1.05) brightness(0.85);
+  mix-blend-mode: multiply;
+  opacity: 0.78;
+}
+
+.fullbleed.duotone-warm { background: var(--accent-deep); }
+.fullbleed.duotone-warm img {
+  filter: grayscale(0.95) contrast(1.1) brightness(0.55);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+.fullbleed.duotone-sky { background: var(--slate-deep); }
+.fullbleed.duotone-sky img {
+  filter: grayscale(0.95) contrast(1.05) brightness(0.55);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+.fullbleed.duotone-leaf { background: var(--leaf-deep); }
+.fullbleed.duotone-leaf img {
+  filter: grayscale(0.9) contrast(1.05) brightness(0.6);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+/* ---------- 2021 → 2026 BANNER (cold-open primary motif) ---------- */
+.year-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vw, 36px);
+  margin: 56px 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  flex-wrap: wrap;
+}
+.year-banner .year {
+  font-size: clamp(56px, 8vw, 128px);
+  line-height: 0.9;
+  color: var(--ink);
+  font-feature-settings: "tnum";
+  position: relative;
+  display: inline-block;
+}
+.year-banner .year-from { color: var(--ink-3); }
+.year-banner .year-to {
+  color: var(--accent);
+  position: relative;
+}
+.year-banner .year-to::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 6px;
+  height: 6px;
+  background: var(--accent);
+  opacity: 0.18;
+}
+.year-banner .arrow {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 8vw, 128px);
+  line-height: 0.9;
+  color: var(--ink-3);
+  font-weight: 300;
+}
+.year-banner .span-label {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Six-marker timeline strip — usable across chapters */
+.year-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  padding: 18px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 32px 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Spaced variant — used in ch16 with amounts under each year */
+.year-strip-spaced {
+  gap: 24px;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.year-strip-spaced .y {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+}
+.year-strip-spaced .y + .y { border-left: 1px solid var(--rule-soft); }
+.year-strip-spaced .y .amt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-mute);
+  font-feature-settings: "tnum";
+  text-transform: none;
+}
+.year-strip-spaced .y.active .amt {
+  color: var(--accent);
+  font-weight: 700;
+}
+.year-strip-spaced .y.active::after {
+  bottom: -33px !important;
+}
+.year-strip .y {
+  font-size: 22px;
+  color: var(--ink-mute);
+  flex: 1;
+  text-align: center;
+  position: relative;
+  font-feature-settings: "tnum";
+}
+.year-strip .y.active {
+  color: var(--accent);
+  font-weight: 700;
+}
+.year-strip .y.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -19px;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  transform: translateX(-50%) rotate(45deg);
+}
+.year-strip .y + .y { border-left: 1px solid var(--rule-soft); }
+.bg-ink .year-strip, .bg-slate .year-strip, .bg-slate-deep .year-strip, .bg-leaf .year-strip {
+  border-top-color: rgba(255,255,255,0.22);
+  border-bottom-color: rgba(255,255,255,0.22);
+}
+.bg-ink .year-strip .y, .bg-slate .year-strip .y, .bg-slate-deep .year-strip .y, .bg-leaf .year-strip .y {
+  color: rgba(255,255,255,0.4);
+}
+.bg-ink .year-strip .y.active, .bg-slate .year-strip .y.active, .bg-slate-deep .year-strip .y.active, .bg-leaf .year-strip .y.active {
+  color: var(--accent-soft);
+}
+.bg-ink .year-strip .y + .y, .bg-slate .year-strip .y + .y, .bg-slate-deep .year-strip .y + .y, .bg-leaf .year-strip .y + .y {
+  border-left-color: rgba(255,255,255,0.12);
+}
+
+/* Hairline rule above eyebrow on cold-open */
+.editorial-rule {
+  width: 80px;
+  height: 1px;
+  background: var(--accent);
+  margin: 0 auto 32px auto;
+}
+
+/* ---------- Hide the old sun-rays decoration ---------- */
+.sun-rays { display: none !important; }
+
+/* ---------- Bars / chart elements ---------- */
+.seg.ps   { background: var(--slate); color: var(--paper); }
+.seg.mooe { background: var(--ochre); color: var(--ink); }
+.seg.co   { background: var(--accent); color: var(--paper); }
+.col-label { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+
+.growth-svg .grow-line { stroke: var(--accent); }
+.growth-svg .grow-dot { fill: var(--accent); }
+
+.flow-list { margin-top: 48px; display: flex; flex-direction: column; }
+.flow-row {
+  display: grid;
+  grid-template-columns: 60px 1.4fr 1fr 140px;
+  gap: 22px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  align-items: center;
+}
+.bg-ink .flow-row, .bg-slate-deep .flow-row { border-bottom-color: rgba(255,255,255,0.15); }
+.flow-row .rank {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  font-feature-settings: "tnum";
+}
+.flow-row .name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.flow-row .bar { position: relative; height: 12px; background: rgba(0,0,0,0.06); }
+.bg-ink .flow-row .bar, .bg-slate-deep .flow-row .bar { background: rgba(255,255,255,0.1); }
+.flow-row .bar .fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left center; }
+.flow-row .amt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  text-align: right;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.005em;
+}
+
+/* Unlock cards */
+.unlock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 56px; background: var(--rule); }
+.unlock-card {
+  background: var(--paper);
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+.bg-slate-deep .unlock-grid, .bg-ink .unlock-grid, .bg-leaf .unlock-grid { background: rgba(255,255,255,0.18); }
+.bg-slate-deep .unlock-card, .bg-ink .unlock-card, .bg-leaf .unlock-card {
+  background: var(--slate-deep);
+  color: var(--paper);
+}
+.unlock-card .num {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 6.5vw, 96px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  font-feature-settings: "tnum";
+}
+.bg-slate-deep .unlock-card .num, .bg-ink .unlock-card .num, .bg-leaf .unlock-card .num { color: var(--accent-soft); }
+.unlock-card .label {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+.unlock-card .note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule-soft);
+}
+.bg-slate-deep .unlock-card .note, .bg-ink .unlock-card .note, .bg-leaf .unlock-card .note { color: var(--paper-warm); opacity: 0.6; border-top-color: rgba(255,255,255,0.18); }
+@media (max-width: 900px) { .unlock-grid { grid-template-columns: 1fr; } }
+
+/* Forward arrow — editorial weight */
+.arrow-forward {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: clamp(120px, 22vw, 320px);
+  line-height: 0.86;
+  color: var(--accent);
+  font-weight: 300;
+}
+.bg-ink .arrow-forward, .bg-slate-deep .arrow-forward, .bg-leaf .arrow-forward { color: var(--accent-soft); }
+
+/* Number stamp */
+.stamp { color: var(--accent); border-color: var(--accent); }
+.bg-ink .stamp, .bg-slate-deep .stamp, .bg-leaf .stamp { color: var(--accent-soft); border-color: var(--accent-soft); }
+
+/* Bignum block */
+.bignum-block .label { font-family: var(--font-ui); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--paper-warm); opacity: 0.7; font-weight: 600; }
+.bignum-block .v { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; font-size: clamp(64px, 7vw, 112px); line-height: 0.92; }
+
+/* Marquee */
+.marquee {
+  background: var(--paper-warm);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+/* Coda footer */
+.coda { background: var(--paper); }
+.coda .body { font-family: var(--font-serif); }
+
+/* Chrome adjustment for editorial feel */
+.chrome { font-family: var(--font-ui); }
+.chrome-mark b { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em; }
