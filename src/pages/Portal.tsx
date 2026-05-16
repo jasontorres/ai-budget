@@ -12,6 +12,7 @@ import {
 import * as fmt from '../lib/format';
 import { Eyebrow, SectionHead, Spark } from '../components/shared';
 import SiteFooter from '../components/SiteFooter';
+import SiteHeader from '../components/SiteHeader';
 import { buildColumns, buildRow, downloadCsv, filterObjects, objectsToCsv } from '../lib/csv';
 import type { ColumnDef, ObjectFilter, RawCell } from '../lib/csv';
 import type { DeptData, FPAP, ObjectItem, BaseEntity, MoverEntry } from '../lib/types';
@@ -1808,7 +1809,6 @@ export default function Portal() {
   const [objectsState, setObjectsState] = useState<StageState>('idle');
   const [objectsError, setObjectsError] = useState<string | null>(null);
   const [year, setYear] = useState(FALLBACK_YEAR);
-  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const view: View = VIEW_BY_SUFFIX[pathSuffix(location.pathname, deptId)] || 'hierarchy';
@@ -1874,22 +1874,6 @@ export default function Portal() {
     return () => { cancelled = true; };
   }, [view, data, deptId, objectsState]);
 
-  // Close drawer on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
-
-  // Lock body scroll while drawer is open
-  useEffect(() => {
-    if (menuOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [menuOpen]);
-
   if (loadError) {
     return (
       <div
@@ -1933,146 +1917,79 @@ export default function Portal() {
     navigate(`/d/${deptId}${SUFFIX_BY_VIEW[v]}`);
   }
 
+  const sectionTabs: Array<[View, string]> = [
+    ['hierarchy', 'Overview'],
+    ['byyear', 'By year'],
+    ['programs', 'Programs'],
+    ['objects', 'Objects'],
+    ['data', 'Data'],
+    ['methodology', 'Methodology'],
+  ];
+
   return (
     <>
-      <header className="masthead">
-        <div className="masthead-inner">
-          <div className="masthead-top">
-            <span className="masthead-meta-l">
-              <Link to="/" style={{ textDecoration: 'none' }}>← PHILIPPINES GAA</Link>
-              {' · '}DEPARTMENT {deptId} · FISCAL YEARS 2020 – 2026
-            </span>
-            <span className="masthead-meta-r">
-              <DownloadCsvButton
-                data={data}
-                filter={{}}
-                filename={csvFilename}
-                label="Download dataset · CSV"
-                variant="inline"
-              />
-              <span className="masthead-meta-sep">·</span>
-              COMPILED · GAA PHP {fmt.shortPhp(sevenYearTotal, 'B')}
-            </span>
-            <button
-              type="button"
-              className={`hamburger ${menuOpen ? 'open' : ''}`}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-drawer"
-              onClick={() => setMenuOpen((o) => !o)}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-          </div>
-          <h1 className="masthead-title">
-            {data.department.description}
-          </h1>
-          <div className="masthead-nav-row">
-            <nav className="view-tabs">
-              <button className={view === 'hierarchy' ? 'active' : ''} onClick={() => go('hierarchy')}>
-                Overview
+      <SiteHeader
+        crumb={data.department.description}
+        compiledMeta={
+          <>
+            <DownloadCsvButton
+              data={data}
+              filter={{}}
+              filename={csvFilename}
+              label="Download · CSV"
+              variant="inline"
+            />
+            <span className="masthead-meta-sep">·</span>
+            Compiled · ₱{fmt.shortPhp(sevenYearTotal, 'B').replace('₱', '')}
+          </>
+        }
+        subNav={
+          <nav className="view-tabs section-tabs" aria-label="Department sections">
+            {sectionTabs.map(([v, label]) => (
+              <button
+                key={v}
+                className={view === v ? 'active' : ''}
+                onClick={() => go(v)}
+              >
+                {label}
               </button>
-              <button className={view === 'byyear' ? 'active' : ''} onClick={() => go('byyear')}>
-                By year
+            ))}
+          </nav>
+        }
+        drawerExtras={
+          <>
+            <span className="drawer-eyebrow">Department sections</span>
+            {sectionTabs.map(([v, label]) => (
+              <button
+                key={v}
+                type="button"
+                className={`drawer-link ${view === v ? 'active' : ''}`}
+                onClick={() => go(v)}
+              >
+                {label}
+                <span className="drawer-link-arrow">→</span>
               </button>
-              <button className={view === 'programs' ? 'active' : ''} onClick={() => go('programs')}>
-                Programs
-              </button>
-              <button className={view === 'objects' ? 'active' : ''} onClick={() => go('objects')}>
-                Objects
-              </button>
-              <button className={view === 'data' ? 'active' : ''} onClick={() => go('data')}>
-                Data
-              </button>
-              <button className={view === 'methodology' ? 'active' : ''} onClick={() => go('methodology')}>
-                Methodology
-              </button>
-            </nav>
-            <div className="masthead-cross">
-              <Link className="cross-link" to="/">
-                All 40 departments <span className="arrow">→</span>
-              </Link>
-              <Link className="cross-link" to="/methodology">
-                Methodology <span className="arrow">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {menuOpen && (
-        <div className="drawer-scrim" onClick={() => setMenuOpen(false)} aria-hidden="true" />
-      )}
-      <aside
-        id="mobile-drawer"
-        className={`drawer ${menuOpen ? 'open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site navigation"
-      >
-        <div className="drawer-head">
-          <span className="drawer-eyebrow">Browse the data</span>
-          <button
-            type="button"
-            className="drawer-close"
-            aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
-          >
-            ×
-          </button>
-        </div>
-        <nav className="drawer-nav" aria-label="Portal sections">
-          {(
-            [
-              ['hierarchy', 'Overview'],
-              ['byyear', 'By year'],
-              ['programs', 'Programs'],
-              ['objects', 'Objects'],
-              ['data', 'Data'],
-              ['methodology', 'Methodology'],
-            ] as Array<[View, string]>
-          ).map(([v, label]) => (
-            <button
-              key={v}
-              type="button"
-              className={`drawer-link ${view === v ? 'active' : ''}`}
-              onClick={() => {
-                go(v);
-                setMenuOpen(false);
-              }}
-            >
-              {label}
-              <span className="drawer-link-arrow">→</span>
-            </button>
-          ))}
-        </nav>
-        <div className="drawer-section">
-          <span className="drawer-eyebrow">Elsewhere on the site</span>
-          <Link className="drawer-link drawer-link-cross" to="/">
-            All 40 departments <span className="drawer-link-arrow">→</span>
-          </Link>
-          <Link className="drawer-link drawer-link-cross" to="/methodology">
-            Methodology <span className="drawer-link-arrow">→</span>
-          </Link>
-        </div>
-        <div className="drawer-section">
-          <span className="drawer-eyebrow">Dataset</span>
-          <DownloadCsvButton
-            data={data}
-            filter={{}}
-            filename={csvFilename}
-            label="Download · CSV"
-            variant="pill"
-          />
-          <p className="drawer-meta">
-            COMPILED · 7 FISCAL YEARS · GAA PHP {fmt.shortPhp(sevenYearTotal, 'B')}
-          </p>
-        </div>
-      </aside>
+            ))}
+            <span className="drawer-eyebrow" style={{ marginTop: 16 }}>Dataset</span>
+            <DownloadCsvButton
+              data={data}
+              filter={{}}
+              filename={csvFilename}
+              label="Download · CSV"
+              variant="pill"
+            />
+            <p className="drawer-meta">
+              Compiled · 7 fiscal years · ₱{fmt.shortPhp(sevenYearTotal, 'B').replace('₱', '')}
+            </p>
+          </>
+        }
+      />
 
       <main style={{ maxWidth: 1440, margin: '0 auto', padding: '32px 32px 80px' }}>
+        <div className="page-headline">
+          <p className="page-eyebrow">Department {deptId} · FY 2020 – 2026</p>
+          <h1 className="page-title">{data.department.description}</h1>
+        </div>
         {view !== 'methodology' && view !== 'data' && (
           <KpiStrip data={data} hideOnMobile={view !== 'hierarchy'} />
         )}

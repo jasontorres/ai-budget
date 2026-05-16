@@ -1,0 +1,277 @@
+/* =============================================================
+   Site header — BetterGov-family three-tier masthead
+   (alert banner · utility row · logo row · primary nav)
+   Typography is inherited from styles.css tokens.
+   ============================================================= */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+}
+
+/* ---- Override portal.css's old masthead inner constraints ---- */
+.masthead > .masthead-inner {
+  display: block !important;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px !important;
+  gap: 0 !important;
+}
+
+/* ---- Utility top row (date + crumb on left, ecosystem links on right) ---- */
+.masthead-inner > .masthead-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 24px !important;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.masthead-meta-l,
+.masthead-meta-r {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.masthead-meta-r { color: var(--ink-2); }
+.masthead-meta-sep {
+  color: var(--ink-mute);
+  font-weight: 400;
+}
+.masthead-date {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.masthead-loc { color: var(--ink-3); }
+.masthead-compiled {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.masthead-util-sep { margin: 0 6px; color: var(--ink-mute); }
+.masthead-util-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.masthead-util-link {
+  color: var(--ink-2);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color .12s;
+}
+.masthead-util-link:hover { color: var(--accent); }
+.util-arrow {
+  font-size: 10px;
+  color: var(--ink-mute);
+  margin-left: 1px;
+}
+.masthead-util-link:hover .util-arrow { color: var(--accent); }
+
+/* ---- Logo row (BetterGov mark + tagline + hamburger) ---- */
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0 14px;
+}
+.logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.logo-img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+.logo-tag {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.logo-tag-divider {
+  display: inline-block;
+  width: 1px;
+  height: 28px;
+  background: var(--rule);
+}
+.logo-tag-text {
+  font-family: var(--font-hero);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.logo-tag-em {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-left: 6px;
+}
+
+/* Hamburger sits at the right edge of the logo row */
+.logo-row .hamburger {
+  margin-left: auto;
+}
+
+/* ---- Primary nav (horizontal section nav under logo) ---- */
+.primary-nav {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--ink);
+}
+.primary-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  font-family: var(--font-hero);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  text-decoration: none;
+  border-right: 1px solid var(--rule-soft);
+  transition: background .12s, color .12s;
+}
+.primary-nav-link:hover {
+  background: var(--paper-2);
+  color: var(--accent);
+}
+.primary-nav-link.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.primary-nav-link.active:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.primary-nav-external {
+  margin-left: auto;
+  border-right: none;
+  border-left: 1px solid var(--rule-soft);
+  color: var(--ink-3);
+}
+.primary-nav-external .util-arrow { color: var(--accent); }
+
+/* ---- Page-specific sub-nav (rendered below primary nav by consumers) ---- */
+.primary-subnav {
+  border-bottom: 1px solid var(--rule-soft);
+  padding: 0;
+  background: var(--paper);
+}
+.primary-subnav .view-tabs.section-tabs {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  border-top: none !important;
+  padding: 10px 0 !important;
+  min-height: 44px;
+}
+.primary-subnav .view-tabs.section-tabs button {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 0 !important;
+  line-height: 1;
+}
+
+/* ---- Drawer extras (per-page content inside mobile drawer) ---- */
+.drawer-extras {
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---- Tablet (≤ 1024px): tighten padding ---- */
+@media (max-width: 1024px) {
+  .masthead > .masthead-inner { padding: 0 20px !important; }
+}
+
+/* ---- Mobile (≤ 720px): collapse rows, hide desktop nav, show hamburger ---- */
+@media (max-width: 720px) {
+  .masthead > .masthead-inner { padding: 0 16px !important; }
+
+  .masthead-inner > .masthead-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+    padding: 8px 0 !important;
+    font-size: 10px;
+  }
+  .masthead-meta-r { display: none !important; }
+
+  .logo-row {
+    padding: 12px 0 10px;
+    gap: 12px;
+  }
+  .logo-img { height: 32px; }
+  .logo-tag-divider { height: 22px; }
+  .logo-tag-text { font-size: 14px; }
+  .logo-tag-em { display: none; }
+
+  .primary-nav { display: none; }
+  .primary-subnav { display: none; }
+}
+
+/* ---- Desktop: hamburger hidden, drawer hidden ---- */
+@media (min-width: 721px) {
+  .logo-row .hamburger { display: none; }
+}
+
+/* ---- Page headline (rendered below SiteHeader on each page) ---- */
+.page-headline {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.page-title {
+  font-family: var(--font-hero);
+  font-weight: 800;
+  font-size: 38px;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.page-dek {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink-3);
+  margin: 0;
+  max-width: 720px;
+}
+
+@media (max-width: 720px) {
+  .page-title { font-size: 26px; }
+  .page-dek { font-size: 13px; }
+}

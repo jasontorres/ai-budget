@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eyebrow, SectionHead } from '../components/shared';
 import SiteFooter from '../components/SiteFooter';
+import SiteHeader from '../components/SiteHeader';
 import type { NationalIndex } from '../lib/types';
 import * as fmt from '../lib/format';
 
@@ -58,29 +59,18 @@ export default function National() {
 
   return (
     <>
-      <header className="masthead">
-        <div className="masthead-inner">
-          <div className="masthead-top">
-            <span className="masthead-meta-l">REPUBLIC OF THE PHILIPPINES · GENERAL APPROPRIATIONS ACT · FY {idx.years[0]} – {latestYear}</span>
-            <span className="masthead-meta-r">
-              COMPILED · NATIONAL TOTAL FY{latestYear} · PHP {fmt.shortPhp(totalLatest, 'T')}
-            </span>
-          </div>
-          <h1 className="masthead-title">Philippines GAA Budget Portal</h1>
-          <div className="masthead-nav-row">
-            <nav className="view-tabs">
-              <button className="active">Departments</button>
-            </nav>
-            <div className="masthead-cross">
-              <Link className="cross-link" to="/methodology">
-                Methodology <span className="arrow">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        compiledMeta={`Compiled · FY${latestYear} · ₱${fmt.shortPhp(totalLatest, 'T').replace('₱', '')}`}
+      />
 
       <main style={{ maxWidth: 1440, margin: '0 auto', padding: '32px 32px 80px' }}>
+        <div className="page-headline">
+          <p className="page-eyebrow">National overview</p>
+          <h1 className="page-title">Philippines GAA Budget Portal</h1>
+          <p className="page-dek">
+            All 40 national departments, FY {idx.years[0]} – {latestYear}. Click any department to drill in.
+          </p>
+        </div>
         <div className="kpi-strip">
           <div className="kpi-cell">
             <div className="kpi-label">FY {latestYear} appropriation</div>
@@ -111,7 +101,7 @@ export default function National() {
         </div>
         <NationalTrend yearly={idx.national_yearly} />
 
-        <div style={{ marginTop: 40 }}>
+        <div id="departments" style={{ marginTop: 40, scrollMarginTop: 220 }}>
           <SectionHead
             eyebrow="Ranking · FY 2026"
             headline="All departments, sorted by latest appropriation"
