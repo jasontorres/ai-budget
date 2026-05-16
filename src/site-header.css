@@ -158,11 +158,11 @@
   color: var(--accent);
 }
 .primary-nav-link.active {
-  background: var(--ink);
+  background: var(--accent);
   color: var(--paper);
 }
 .primary-nav-link.active:hover {
-  background: var(--ink);
+  background: var(--accent-deep);
   color: var(--paper);
 }
 .primary-nav-external {

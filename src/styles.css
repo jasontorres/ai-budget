@@ -3,21 +3,21 @@
    ============================================================= */
 
 :root {
-  /* Paper & ink */
+  /* Paper & ink — clean white canvas with cool neutral accents */
   --paper: #ffffff;
-  --paper-2: #f7f5f0;
-  --paper-3: #efece4;
-  --rule: #d6cab0;
-  --rule-soft: #ece7d8;
-  --ink: #16140f;
-  --ink-2: #3a352a;
-  --ink-3: #6b6452;
-  --ink-mute: #968d75;
+  --paper-2: #f6f7f9;
+  --paper-3: #eceef2;
+  --rule: #d4d8e0;
+  --rule-soft: #e7eaef;
+  --ink: #11151c;
+  --ink-2: #2b3340;
+  --ink-3: #5b6373;
+  --ink-mute: #8a92a1;
 
   /* Accents */
-  --accent: #b8341f;       /* editorial red */
-  --accent-deep: #7a1f10;
-  --accent-soft: #e8c8b8;
+  --accent: #0b4fd9;       /* BetterGov blue */
+  --accent-deep: #0a44bd;
+  --accent-soft: #e8efff;
   --positive: #3a6b3a;     /* augmentation */
   --negative: #b8341f;     /* shortfall */
   --neutral: #8a7c5a;

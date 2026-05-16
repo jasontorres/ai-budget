@@ -4,20 +4,20 @@
    ============================================================= */
 
 :root {
-  /* Align with the scrollytelling pieces: editorial cream + muted oxblood */
-  --paper:   #f7f5f0;
-  --paper-2: #efece4;
-  --paper-3: #e6e0cd;
-  --rule:    #cbc1a8;
-  --rule-soft: #e2dcc8;
-  --ink:     #16140f;
-  --ink-2:   #3a352a;
-  --ink-3:   #6b6452;
-  --ink-mute: #968d75;
+  /* Clean white canvas + cool neutral accents (was warm cream — overridden) */
+  --paper:   #ffffff;
+  --paper-2: #f6f7f9;
+  --paper-3: #eceef2;
+  --rule:    #d4d8e0;
+  --rule-soft: #e7eaef;
+  --ink:     #11151c;
+  --ink-2:   #2b3340;
+  --ink-3:   #5b6373;
+  --ink-mute: #8a92a1;
 
-  --accent:      #8a2418;     /* muted oxblood — matches narrative-future */
-  --accent-deep: #5e1810;
-  --accent-soft: #d8b8a8;
+  --accent:      #0b4fd9;     /* BetterGov blue */
+  --accent-deep: #0a44bd;
+  --accent-soft: #e8efff;
   --slate:       #2d3e4f;
   --slate-deep:  #1a2935;
   --positive:    #4a5a3a;
