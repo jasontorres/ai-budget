@@ -11,7 +11,8 @@
     "cleanup:r2": "tsx scripts/cleanup-r2-jsons.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.33.1-dev45.0",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1048.0",
     "@aws-sdk/lib-storage": "^3.1048.0",
+    "@cloudflare/vite-plugin": "^1.37.1",
     "@duckdb/node-api": "^1.5.2-r.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
@@ -36,6 +38,7 @@
     "tsx": "^4.19.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "wrangler": "^4.92.0"
   }
 }
