@@ -26,3 +26,7 @@ dist-ssr
 # Large source dataset (3.7GB) — symlinked into public/data at build time
 /data
 /public/data
+
+# Local env (R2 credentials etc.)
+.env
+.env.local

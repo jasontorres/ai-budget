@@ -6,16 +6,23 @@
   "scripts": {
     "dev": "vite",
     "build:index": "tsx scripts/build-national-index.ts",
+    "build:parquet": "tsx scripts/convert-to-parquet.ts",
+    "upload:r2": "tsx scripts/upload-to-r2.ts",
+    "cleanup:r2": "tsx scripts/cleanup-r2-jsons.ts",
     "build": "npm run build:index && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@duckdb/duckdb-wasm": "^1.33.1-dev45.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1048.0",
+    "@aws-sdk/lib-storage": "^3.1048.0",
+    "@duckdb/node-api": "^1.5.2-r.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
@@ -25,6 +32,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "mime": "^4.1.0",
     "tsx": "^4.19.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
