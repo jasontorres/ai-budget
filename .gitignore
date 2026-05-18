@@ -30,3 +30,9 @@ dist-ssr
 # Local env (R2 credentials etc.)
 .env
 .env.local
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
