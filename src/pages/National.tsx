@@ -21,6 +21,20 @@ export default function National() {
       .catch((e) => setErr(String(e?.message || e)));
   }, []);
 
+  // React Router doesn't scroll to a URL hash on navigation — wire it up
+  // ourselves so `/#groups` (from the navbar) lands on the ranking table.
+  // Runs after `idx` resolves so the target element is in the DOM.
+  useEffect(() => {
+    if (!idx) return;
+    const id = window.location.hash.replace(/^#/, '');
+    if (!id) return;
+    // Defer one frame: the section we're scrolling to renders after `idx`
+    // hydrates the table, and scrollIntoView needs the layout pass to land.
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [idx]);
+
   if (err) {
     return (
       <main style={{ maxWidth: 1000, margin: '60px auto', padding: '0 32px', fontFamily: 'var(--font-mono)' }}>
@@ -100,7 +114,7 @@ export default function National() {
         </div>
         <NationalTrend yearly={idx.national_yearly} />
 
-        <div id="departments" style={{ marginTop: 40, scrollMarginTop: 220 }}>
+        <div id="groups" style={{ marginTop: 40, scrollMarginTop: 220 }}>
           <SectionHead
             eyebrow="Ranking · FY 2026"
             headline="All groups, sorted by latest appropriation"

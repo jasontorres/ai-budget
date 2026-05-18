@@ -136,8 +136,20 @@ export default function SiteHeader({ subNav, drawerExtras, crumb, compiledMeta }
               National
             </Link>
             <Link
-              to="/#departments"
+              to="/#groups"
               className={`primary-nav-link ${location.pathname.startsWith('/d/') ? 'active' : ''}`}
+              onClick={(e) => {
+                // When already on the National page, <Link> won't re-navigate
+                // and the browser ignores hash-only changes that match. Force
+                // the scroll ourselves.
+                if (location.pathname === '/') {
+                  e.preventDefault();
+                  document
+                    .getElementById('groups')
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  history.replaceState(null, '', '/#groups');
+                }
+              }}
             >
               All 40 Groups
             </Link>

@@ -42,6 +42,11 @@ export default function SiteFooter({ source }: SiteFooterProps = {}) {
         </ul>
         <p className="sf-credit">
           Site by <a href="https://about.bettergov.ph" target="_blank" rel="noopener">BetterGov</a>
+          {' · '}
+          Source code{' '}
+          <a href="https://github.com/jasontorres/ai-budget/" target="_blank" rel="noopener">
+            github.com/jasontorres/ai-budget ↗
+          </a>
         </p>
       </div>
     </footer>
