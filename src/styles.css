@@ -593,6 +593,85 @@ table.editorial tr.clickable { cursor: pointer; }
   100% { transform: translateX(240px); }
 }
 
+/* ---------- Stage loader (Programs / Objects / Data) ---------- */
+.stage-loader {
+  padding: 48px 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--ink-3);
+  border: 1px dashed var(--rule);
+  border-radius: 6px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.stage-loader-error { color: var(--accent); }
+.stage-loader .loading-bar {
+  width: min(360px, 70%);
+  margin: 6px 0 4px;
+}
+.stage-loader-title {
+  color: var(--ink);
+  font-weight: 600;
+}
+.stage-loader-tech {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin: 0;
+}
+.stage-loader-detail {
+  font-size: 12px;
+  color: var(--ink-3);
+  max-width: 520px;
+  margin: 0;
+  line-height: 1.5;
+}
+.stage-loader-elapsed {
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.stage-loader-hint {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-style: italic;
+  max-width: 460px;
+  margin: 0;
+}
+
+/* ---------- Page-shell loader (initial dept load) ---------- */
+.page-shell-loader {
+  padding: 100px 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.page-shell-loader-title {
+  color: var(--ink);
+  font-size: 14px;
+  margin: 0;
+}
+.page-shell-loader-detail {
+  font-size: 12px;
+  margin: 0;
+}
+.page-shell-loader-elapsed {
+  font-size: 11px;
+  color: var(--ink-mute);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.page-shell-loader .loading-bar {
+  margin: 4px 0;
+}
+
 /* ---------- Bars & dots (small charts) ---------- */
 .bar-h {
   height: 8px;

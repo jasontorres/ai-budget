@@ -1716,6 +1716,17 @@ function DataBrowserView({ data }: { data: DeptData }) {
 /* ---------- Lazy-load affordances for heavy stages ---------- */
 type StageState = 'idle' | 'loading' | 'loaded' | 'error';
 
+/** Ticks elapsed seconds while mounted. Used inside loading-state UI to
+ *  give users a visible sign that work is happening on long parquet queries. */
+function Elapsed() {
+  const [secs, setSecs] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setSecs((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return <>{secs}s elapsed</>;
+}
+
 function StageLoader({
   stage,
   state,
@@ -1730,30 +1741,25 @@ function StageLoader({
   onLoad?: () => void;
 }) {
   const sizeHint = stage === 'mid' ? midSizeHintMb(deptId) : objectsSizeHintMb(deptId);
-  const fileLabel =
-    stage === 'mid' ? 'the program / op-unit / fund / expense data' : 'the line-item data';
-  const fileTechnical =
-    stage === 'mid' ? 'fpaps + operating_units + fund_subcategories + expenses' : 'objects.json';
+  const stageLabel =
+    stage === 'mid' ? 'programs, bureaus, funds & expense classes' : 'line-item appropriations';
+  const stageTechnical =
+    stage === 'mid'
+      ? 'fpaps + operating_units + fund_subcategories + expenses'
+      : 'objects (UACS line items)';
+  const heavyHint =
+    stage === 'objects' &&
+    'Large groups can return hundreds of thousands of rows — the query runs entirely in your browser via DuckDB-WASM.';
 
   if (state === 'idle' && onLoad) {
     return (
-      <div
-        style={{
-          padding: '48px 24px',
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          color: 'var(--ink-3)',
-          border: '1px dashed var(--rule)',
-          borderRadius: 6,
-          marginTop: 24,
-        }}
-      >
+      <div className="stage-loader stage-loader-idle">
         <p>
-          This department’s {fileLabel} is large
-          {sizeHint != null && ` (~${sizeHint} MB)`} and isn’t loaded automatically.
+          This group’s {stageLabel} aren’t loaded automatically
+          {sizeHint != null && ` (~${sizeHint} MB on the wire)`}.
         </p>
-        <p style={{ fontSize: 12, color: 'var(--ink-mute)', margin: '8px 0 16px' }}>
-          <code>{fileTechnical}</code>
+        <p className="stage-loader-tech">
+          <code>{stageTechnical}</code>
         </p>
         <button
           type="button"
@@ -1768,32 +1774,32 @@ function StageLoader({
     );
   }
 
+  if (state === 'error') {
+    return (
+      <div className="stage-loader stage-loader-error">
+        <p>Could not load {stageLabel} for group {deptId}.</p>
+        <p className="stage-loader-detail">{error}</p>
+      </div>
+    );
+  }
+
+  // state === 'loading' (or 'loaded' transition — both fall through to the
+  // progress UI; the parent unmounts us once the data is in hand).
   return (
-    <div
-      style={{
-        padding: '48px 24px',
-        textAlign: 'center',
-        fontFamily: 'var(--font-mono)',
-        color: state === 'error' ? 'var(--accent)' : 'var(--ink-3)',
-        border: '1px dashed var(--rule)',
-        borderRadius: 6,
-        marginTop: 24,
-      }}
-    >
-      {state === 'error' ? (
-        <>
-          <p>Could not load {fileLabel} for department {deptId}.</p>
-          <p style={{ fontSize: 12 }}>{error}</p>
-        </>
-      ) : (
-        <>
-          <p>Loading {fileLabel}…</p>
-          {sizeHint != null && (
-            <p style={{ fontSize: 12, marginTop: 8 }}>
-              ~{sizeHint} MB total — may take a moment.
-            </p>
-          )}
-        </>
+    <div className="stage-loader stage-loader-loading">
+      <p className="stage-loader-title">
+        Querying {stageLabel}…
+      </p>
+      <div className="loading-bar" aria-hidden="true" />
+      <p className="stage-loader-detail">
+        Range-reading parquet from the CDN, then aggregating in your browser.
+        {sizeHint != null && ` ~${sizeHint} MB worst-case payload.`}
+      </p>
+      <p className="stage-loader-elapsed" aria-live="polite">
+        <Elapsed />
+      </p>
+      {heavyHint && (
+        <p className="stage-loader-hint">{heavyHint}</p>
       )}
     </div>
   );
@@ -1891,7 +1897,7 @@ export default function Portal() {
           color: 'var(--accent)',
         }}
       >
-        <p>Could not load department <code>{deptId}</code>.</p>
+        <p>Could not load group <code>{deptId}</code>.</p>
         <p style={{ color: 'var(--ink-3)', fontSize: 12 }}>{loadError}</p>
         <p><Link to="/">← Back to national overview</Link></p>
       </div>
@@ -1900,15 +1906,13 @@ export default function Portal() {
 
   if (!data) {
     return (
-      <div
-        style={{
-          padding: 80,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          color: 'var(--ink-3)',
-        }}
-      >
-        Loading FY 2020 – 2026 data for department {deptId}…
+      <div className="page-shell-loader">
+        <p className="page-shell-loader-title">Loading group {deptId}…</p>
+        <div className="loading-bar" aria-hidden="true" />
+        <p className="page-shell-loader-detail">FY 2020 – 2026 totals & bureaus</p>
+        <p className="page-shell-loader-elapsed" aria-live="polite">
+          <Elapsed />
+        </p>
       </div>
     );
   }
@@ -1951,7 +1955,7 @@ export default function Portal() {
           </>
         }
         subNav={
-          <nav className="view-tabs section-tabs" aria-label="Department sections">
+          <nav className="view-tabs section-tabs" aria-label="Group sections">
             {sectionTabs.map(([v, label]) => (
               <button
                 key={v}
@@ -1965,7 +1969,7 @@ export default function Portal() {
         }
         drawerExtras={
           <>
-            <span className="drawer-eyebrow">Department sections</span>
+            <span className="drawer-eyebrow">Group sections</span>
             {sectionTabs.map(([v, label]) => (
               <button
                 key={v}
