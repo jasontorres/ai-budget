@@ -26,7 +26,7 @@ export default function National() {
       <main style={{ maxWidth: 1000, margin: '60px auto', padding: '0 32px', fontFamily: 'var(--font-mono)' }}>
         <p style={{ color: 'var(--accent)' }}>{err}</p>
         <p style={{ color: 'var(--ink-3)' }}>
-          You can still browse individual departments directly: <Link to="/d/01">/d/01 — Congress</Link>,
+          You can still browse individual groups directly: <Link to="/d/01">/d/01 — Congress</Link>,
           {' '}<Link to="/d/02">/d/02</Link>, <Link to="/d/03">/d/03</Link>, <Link to="/d/04">/d/04</Link>.
         </p>
       </main>
@@ -67,14 +67,14 @@ export default function National() {
           <p className="page-eyebrow">National overview</p>
           <h1 className="page-title">Philippines GAA Budget Portal</h1>
           <p className="page-dek">
-            All 40 national departments, FY {idx.years[0]} – {latestYear}. Click any department to drill in.
+            All 40 national groups, FY {idx.years[0]} – {latestYear}. Click any group to drill in.
           </p>
         </div>
         <div className="kpi-strip">
           <div className="kpi-cell">
             <div className="kpi-label">FY {latestYear} appropriation</div>
             <div className="kpi-value">{fmt.shortPhp(totalLatest, 'T')}</div>
-            <div className="kpi-sub">national, all departments</div>
+            <div className="kpi-sub">national, all groups</div>
           </div>
           <div className="kpi-cell">
             <div className="kpi-label">YoY change · {prevYear} → {latestYear}</div>
@@ -89,7 +89,7 @@ export default function National() {
             <div className="kpi-sub">nominal</div>
           </div>
           <div className="kpi-cell">
-            <div className="kpi-label">Departments tracked</div>
+            <div className="kpi-label">Groups tracked</div>
             <div className="kpi-value">{depts.length}</div>
             <div className="kpi-sub">{depts.filter((d) => d.has_data).length} with line-item data</div>
           </div>
@@ -103,8 +103,8 @@ export default function National() {
         <div id="departments" style={{ marginTop: 40, scrollMarginTop: 220 }}>
           <SectionHead
             eyebrow="Ranking · FY 2026"
-            headline="All departments, sorted by latest appropriation"
-            dek="Click any row to drill into that department’s hierarchy."
+            headline="All groups, sorted by latest appropriation"
+            dek="Click any row to drill into that group’s hierarchy."
           />
         </div>
 
@@ -112,7 +112,7 @@ export default function National() {
           <thead>
             <tr>
               <th style={{ width: 60 }}>ID</th>
-              <th>Department</th>
+              <th>Group</th>
               <th style={{ width: 220 }}>FY {latestYear}</th>
               <th style={{ width: 100, textAlign: 'right' }}>vs {prevYear}</th>
               <th style={{ width: 100, textAlign: 'right' }}></th>

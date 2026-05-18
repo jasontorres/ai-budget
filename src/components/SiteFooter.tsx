@@ -7,7 +7,7 @@ export default function SiteFooter({ source }: SiteFooterProps = {}) {
     <footer className="site-footer">
       <div className="site-footer-inner">
         <p className="sf-source">
-          {source ?? 'SOURCE: GENERAL APPROPRIATIONS ACT · 40 DEPARTMENTS · FY 2020 – 2026'}
+          {source ?? 'SOURCE: GENERAL APPROPRIATIONS ACT · 40 GROUPS · FY 2020 – 2026'}
         </p>
         <p className="sf-disclaimer">
           <strong>AI-assisted analysis.</strong> The figures, breakdowns, and editorial commentary on

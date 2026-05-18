@@ -139,7 +139,7 @@ export default function SiteHeader({ subNav, drawerExtras, crumb, compiledMeta }
               to="/#departments"
               className={`primary-nav-link ${location.pathname.startsWith('/d/') ? 'active' : ''}`}
             >
-              All 40 Departments
+              All 40 Groups
             </Link>
             {PRIMARY_NAV.filter((n) => n.to !== '/').map((n) => (
               <Link
