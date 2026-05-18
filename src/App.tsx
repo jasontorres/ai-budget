@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 const National = lazy(() => import('./pages/National'));
 const Portal = lazy(() => import('./pages/Portal'));
 const Methodology = lazy(() => import('./pages/Methodology'));
+const Explore = lazy(() => import('./pages/Explore'));
 
 function PageFallback() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<National />} />
           <Route path="/methodology" element={<Methodology />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/d/:deptId" element={<Portal />} />
           <Route path="/d/:deptId/overview" element={<Portal />} />
           <Route path="/d/:deptId/by-year" element={<Portal />} />

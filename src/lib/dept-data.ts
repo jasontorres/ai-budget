@@ -16,34 +16,49 @@ import type {
   YearMap,
   YearlyTotalRow,
 } from './types';
+import { dataDeptUrl } from './data-url';
+import { loadManifest, parquetUrls, runQuery, type ParquetManifest } from './duckdb';
 
 export const YEARS: number[] = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
 const SCALE = 1000;
 
 /**
  * Three-stage progressive load:
- *   A · core (always upfront)     — departments + yearly + agencies        (~50KB)
- *   B · mid  (auto unless heavy)  — fpaps + op_units + fund_sub + expenses
- *   C · objects (on demand)       — objects.json
+ *   A · core (always upfront)     — departments + yearly + agencies        (~10 KB, JSON)
+ *   B · mid  (auto unless heavy)  — fpaps + op_units + fund_sub + expenses (parquet)
+ *   C · objects (on demand)       — objects                                (parquet)
  *
- * For most departments Stage B is small enough to fire in the background
- * right after Stage A lands, so the UI feels instant. For a small number of
- * outlier departments the Stage B JSONs are tens-to-hundreds of MB each;
- * we list them in `HEAVY_MID_DEPTS` so the UI requires explicit opt-in.
+ * Stage A is small enough to stay JSON. Stages B and C query Hive-partitioned
+ * parquet via DuckDB-WASM and reshape the rows back into the existing
+ * RawDataset<T> shape so the rest of this module (rescale, aggregations,
+ * Portal components) is unchanged.
+ *
+ * Heavy departments still get a gate — DPWH (18) has ~80 MB of Stage B
+ * parquet which is OK on broadband but worth confirming before firing.
  */
-const HEAVY_MID_DEPTS = new Set<string>(['18']); // DPWH: ~653MB combined
-const SKIP_EXPENSES = new Set<string>(['18']);
+const HEAVY_MID_DEPTS = new Set<string>(['18']);
+const SKIP_EXPENSES = new Set<string>([]);
+/**
+ * Depts whose objects parquet aggregates to so many rows (DepEd ~995k, DPWH
+ * ~?) that materialising them as a JS array locks the main thread on
+ * filter/sort even with pagination. Require explicit opt-in until the
+ * Objects view is refactored to issue per-page SQL queries.
+ */
+const HEAVY_OBJECTS_DEPTS = new Set<string>(['07', '18']);
 
 const MID_SIZE_HINT_MB: Record<string, number> = {
-  '18': 653,
+  '18': 80,
 };
 const OBJECT_SIZE_HINT_MB: Record<string, number> = {
-  '07': 650,
-  '18': 224,
+  '07': 125,
+  '18': 50,
 };
 
 export function isMidHeavy(deptId: string): boolean {
   return HEAVY_MID_DEPTS.has(deptId);
+}
+export function isObjectsHeavy(deptId: string): boolean {
+  return HEAVY_OBJECTS_DEPTS.has(deptId);
 }
 export function midSizeHintMb(deptId: string): number | undefined {
   return MID_SIZE_HINT_MB[deptId];
@@ -72,6 +87,118 @@ async function loadJson<T>(path: string): Promise<T> {
   const r = await fetch(path);
   if (!r.ok) throw new Error('Failed to load ' + path);
   return (await r.json()) as T;
+}
+
+/**
+ * Per-table parquet metadata: which `*_code` column the table has and which
+ * foreign-key columns to project. Used to rebuild RawDataset<T> from the
+ * year-unpivoted parquet rows.
+ */
+interface TableSpec {
+  codeCol: string;
+  fkCols: ReadonlyArray<string>;
+}
+const TABLE_SPECS: Record<string, TableSpec> = {
+  fpaps: { codeCol: 'fpap_code', fkCols: ['agency_id'] },
+  operating_units: { codeCol: 'operunit_code', fkCols: ['fpap_id', 'agency_id'] },
+  fund_subcategories: {
+    codeCol: 'fund_code',
+    fkCols: ['operating_unit_id', 'fpap_id', 'agency_id'],
+  },
+  expenses: {
+    codeCol: 'expense_code',
+    fkCols: ['fund_id', 'operating_unit_id', 'fpap_id', 'agency_id'],
+  },
+  objects: {
+    codeCol: 'object_code',
+    fkCols: ['expense_id', 'fund_id', 'operating_unit_id', 'fpap_id', 'agency_id'],
+  },
+};
+
+interface AggregatedRow {
+  id: string;
+  slug: string;
+  code: string;
+  description: string;
+  department_id: string;
+  [yearOrFk: string]: unknown;
+}
+
+/**
+ * Query the year-partitioned parquet tree for a single table and reshape
+ * the rows back into the JSON `RawDataset<T>` envelope that the rest of
+ * this module already knows how to consume. One row per `id` with each
+ * canonical year projected as flat `amount_YYYY` / `count_YYYY` columns —
+ * conditional aggregates instead of LIST<STRUCT>, which avoids Apache
+ * Arrow's nested-type serialization in the wasm bridge.
+ */
+async function loadParquetTable<T>(
+  deptId: string,
+  table: keyof typeof TABLE_SPECS,
+  manifest: ParquetManifest,
+): Promise<RawDataset<T>> {
+  const spec = TABLE_SPECS[table];
+  const urls = parquetUrls(deptId, table, manifest);
+  const fkSelect = spec.fkCols
+    .map((c) => `ANY_VALUE(${c}) AS ${c}`)
+    .join(',\n      ');
+  const yearAggs = YEARS.flatMap((y) => [
+    `SUM(amount) FILTER (WHERE year = ${y}) AS amount_${y}`,
+    `SUM(count)  FILTER (WHERE year = ${y}) AS count_${y}`,
+  ]).join(',\n      ');
+  const sql = `
+    SELECT
+      id,
+      ANY_VALUE(slug) AS slug,
+      ANY_VALUE(code) AS code,
+      ANY_VALUE(description) AS description,
+      ${fkSelect}${spec.fkCols.length ? ',' : ''}
+      ANY_VALUE(department_id) AS department_id,
+      ${yearAggs}
+    FROM read_parquet(${urls}, hive_partitioning = true)
+    GROUP BY id
+  `;
+  const t0 = performance.now();
+  console.log(`[parquet] dept ${deptId} / ${table}: query begin`);
+  const { rows, ms } = await Promise.race([
+    runQuery<AggregatedRow>(sql),
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`Query timeout (90s) for ${deptId}/${table}`)),
+        90_000,
+      ),
+    ),
+  ]);
+  console.log(
+    `[parquet] dept ${deptId} / ${table}: ${rows.length} rows in ${ms.toFixed(0)} ms (wall ${(performance.now() - t0).toFixed(0)} ms)`,
+  );
+  const data = rows.map((r) => {
+    const years: YearMap = {};
+    for (const y of YEARS) {
+      const a = r[`amount_${y}`];
+      const c = r[`count_${y}`];
+      if (a == null && c == null) continue;
+      years[y] = {
+        count: c == null ? 0 : typeof c === 'bigint' ? Number(c) : (c as number),
+        amount: a == null ? 0 : (a as number),
+      };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const row: any = {
+      id: r.id,
+      slug: r.slug,
+      [spec.codeCol]: r.code,
+      description: r.description,
+      department_id: r.department_id,
+      years,
+    };
+    for (const c of spec.fkCols) row[c] = r[c];
+    return row as T;
+  });
+  console.log(
+    `[parquet] dept ${deptId} / ${table}: reshaped ${data.length} rows in ${(performance.now() - t0).toFixed(0)} ms total`,
+  );
+  return { data };
 }
 
 function emptyYearMap(): YearMap {
@@ -106,8 +233,7 @@ export function maxOver(rec: { years: YearMap }, years: number[] = YEARS): numbe
 }
 
 function deptUrl(deptId: string, file: string): string {
-  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-  return `${base}/data/${deptId}/${file}`;
+  return `${dataDeptUrl(deptId)}/${file}`;
 }
 
 function emptyExpenseClassByYear(): Record<number, ExpenseClassBreakdown> {
@@ -188,21 +314,22 @@ export async function loadDeptData(deptId: string): Promise<DeptData> {
 }
 
 /**
- * Stage B. Fetches the program/op-unit/fund/expense JSONs, computes all
- * mid-level derivatives (fpapFamilies, fpapsByAgency, expense-class
- * breakdowns, topMovers), and returns a new DeptData with `midLoaded: true`.
+ * Stage B. Queries fpaps/operating_units/fund_subcategories/expenses from
+ * the dept's Hive-partitioned parquet tree, reshapes back into the
+ * RawDataset<T> envelope, then computes the mid-level derivatives
+ * (fpapFamilies, fpapsByAgency, expense-class breakdowns, topMovers).
  */
 export async function loadDeptMidInto(data: DeptData, deptId: string): Promise<DeptData> {
-  const url = (p: string) => deptUrl(deptId, p);
   const skipExpenses = SKIP_EXPENSES.has(deptId);
+  const manifest = await loadManifest(deptId);
 
   const [fpapsRaw, opUnitsRaw, fundsRaw, expensesRaw] = await Promise.all([
-    loadJson<RawDataset<FPAP>>(url('fpaps.json')),
-    loadJson<RawDataset<OperatingUnit>>(url('operating_units.json')),
-    loadJson<RawDataset<Fund>>(url('fund_subcategories.json')),
+    loadParquetTable<FPAP>(deptId, 'fpaps', manifest),
+    loadParquetTable<OperatingUnit>(deptId, 'operating_units', manifest),
+    loadParquetTable<Fund>(deptId, 'fund_subcategories', manifest),
     skipExpenses
       ? Promise.resolve<RawDataset<Expense>>({ data: [] })
-      : loadJson<RawDataset<Expense>>(url('expenses.json')),
+      : loadParquetTable<Expense>(deptId, 'expenses', manifest),
   ]);
 
   const fpapArr: FPAP[] = fpapsRaw.data
@@ -307,12 +434,14 @@ export async function loadDeptMidInto(data: DeptData, deptId: string): Promise<D
 }
 
 /**
- * Stage C. Fetches objects.json (the largest file) and returns a new DeptData
- * with `objects` populated. Called on-demand the first time the user enters
- * the Objects or Data view.
+ * Stage C. Queries the objects parquet (the largest table — ~125 MB
+ * partitioned for DepEd vs. 650 MB JSON) and returns a new DeptData with
+ * `objects` populated. Called on-demand the first time the user enters the
+ * Objects or Data view.
  */
 export async function loadDeptObjectsInto(data: DeptData, deptId: string): Promise<DeptData> {
-  const raw = await loadJson<RawDataset<ObjectItem>>(deptUrl(deptId, 'objects.json'));
+  const manifest = await loadManifest(deptId);
+  const raw = await loadParquetTable<ObjectItem>(deptId, 'objects', manifest);
   const objects: ObjectItem[] = raw.data.filter((o) => !isNan(o)).map(rescale);
   return { ...data, objects, objectsLoaded: true };
 }

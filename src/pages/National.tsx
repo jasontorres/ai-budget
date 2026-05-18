@@ -5,15 +5,14 @@ import SiteFooter from '../components/SiteFooter';
 import SiteHeader from '../components/SiteHeader';
 import type { NationalIndex } from '../lib/types';
 import * as fmt from '../lib/format';
-
-const BASE = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+import { dataUrl } from '../lib/data-url';
 
 export default function National() {
   const [idx, setIdx] = useState<NationalIndex | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${BASE}/data/national/index.json`)
+    fetch(dataUrl('national/index.json'))
       .then((r) => {
         if (!r.ok) throw new Error(`Failed to load national index (HTTP ${r.status}). Run \`npm run build:index\`.`);
         return r.json();

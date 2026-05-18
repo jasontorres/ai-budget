@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, Fragment } from 'react';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   isMidHeavy,
+  isObjectsHeavy,
   loadDeptData,
   loadDeptMidInto,
   loadDeptObjectsInto,
@@ -1853,25 +1854,31 @@ export default function Portal() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, deptId, midState]);
 
-  // Lazy-load objects.json the first time the user enters Objects or Data view.
-  useEffect(() => {
-    if (!data) return;
-    if (objectsState !== 'idle') return;
-    if (view !== 'objects' && view !== 'data') return;
+  const triggerObjectsLoad = () => {
+    if (!data || objectsState !== 'idle') return;
     setObjectsState('loading');
-    let cancelled = false;
     loadDeptObjectsInto(data, deptId)
       .then((next) => {
-        if (cancelled) return;
         setData(next);
         setObjectsState('loaded');
       })
       .catch((e) => {
-        if (cancelled) return;
         setObjectsError(String(e?.message || e));
         setObjectsState('error');
       });
-    return () => { cancelled = true; };
+  };
+
+  // Auto-fire objects load when user enters Objects or Data view, unless the
+  // dept is in HEAVY_OBJECTS_DEPTS (DepEd, DPWH) — those have ~1M aggregated
+  // rows which lock the React render thread on filter/sort even with
+  // pagination. Heavy depts require an explicit click instead.
+  useEffect(() => {
+    if (!data) return;
+    if (objectsState !== 'idle') return;
+    if (view !== 'objects' && view !== 'data') return;
+    if (isObjectsHeavy(deptId)) return;
+    triggerObjectsLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, data, deptId, objectsState]);
 
   if (loadError) {
@@ -2031,7 +2038,13 @@ export default function Portal() {
               onLoad={midState === 'idle' ? triggerMidLoad : undefined}
             />
           ) : (
-            <StageLoader stage="objects" state={objectsState} error={objectsError} deptId={deptId} />
+            <StageLoader
+              stage="objects"
+              state={objectsState}
+              error={objectsError}
+              deptId={deptId}
+              onLoad={objectsState === 'idle' ? triggerObjectsLoad : undefined}
+            />
           ))}
         {view === 'data' &&
           (data.midLoaded && data.objectsLoaded ? (
@@ -2045,7 +2058,13 @@ export default function Portal() {
               onLoad={midState === 'idle' ? triggerMidLoad : undefined}
             />
           ) : (
-            <StageLoader stage="objects" state={objectsState} error={objectsError} deptId={deptId} />
+            <StageLoader
+              stage="objects"
+              state={objectsState}
+              error={objectsError}
+              deptId={deptId}
+              onLoad={objectsState === 'idle' ? triggerObjectsLoad : undefined}
+            />
           ))}
         {view === 'methodology' && <MethodologyView data={data} />}
 
