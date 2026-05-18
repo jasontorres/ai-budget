@@ -9,7 +9,7 @@
     "build:parquet": "tsx scripts/convert-to-parquet.ts",
     "upload:r2": "tsx scripts/upload-to-r2.ts",
     "cleanup:r2": "tsx scripts/cleanup-r2-jsons.ts",
-    "build": "npm run build:index && tsc -b && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

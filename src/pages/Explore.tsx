@@ -158,7 +158,7 @@ export default function Explore() {
       <SiteHeader />
       <main style={{ maxWidth: 1100, margin: "60px auto", padding: "0 32px" }}>
         <Eyebrow>experiment · duckdb-wasm</Eyebrow>
-        <SectionHead>Lazy-loading via Parquet + HTTP Range</SectionHead>
+        <SectionHead headline="Lazy-loading via Parquet + HTTP Range" />
         <p style={{ color: "var(--ink-3)", fontFamily: "var(--font-body)", maxWidth: 720, lineHeight: 1.6 }}>
           Dept 07 (DepEd) JSON tree weighs 786 MB and locks the browser on
           fetch. Converted to year-partitioned Parquet it occupies 145 MB on
