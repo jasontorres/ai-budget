@@ -79,7 +79,7 @@ export default function National() {
       <main style={{ maxWidth: 1440, margin: '0 auto', padding: '32px 32px 80px' }}>
         <div className="page-headline">
           <p className="page-eyebrow">National overview</p>
-          <h1 className="page-title">Philippines GAA Budget Portal</h1>
+          <h1 className="page-title">Philippines GAA Budget AI Review</h1>
           <p className="page-dek">
             All 40 national groups, FY {idx.years[0]} – {latestYear}. Click any group to drill in.
           </p>
