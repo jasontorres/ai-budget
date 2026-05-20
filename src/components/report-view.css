@@ -1,0 +1,219 @@
+/* =============================================================
+   Per-department AI report — renders REPORT.md via react-markdown.
+   Scoped to .dept-report so the editorial typography here cannot
+   leak into the rest of Portal.
+   ============================================================= */
+
+.dept-report {
+  max-width: 760px;
+  margin: 24px auto 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.dept-report > *:first-child {
+  margin-top: 0;
+}
+
+.dept-report h1,
+.dept-report h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.dept-report h1 {
+  font-size: 32px;
+  margin: 48px 0 16px;
+}
+
+.dept-report h2 {
+  font-size: 26px;
+  margin: 44px 0 14px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.dept-report h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--ink);
+  margin: 32px 0 10px;
+  line-height: 1.3;
+}
+
+.dept-report h4 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  margin: 24px 0 8px;
+}
+
+.dept-report p {
+  margin: 0 0 18px;
+}
+
+.dept-report strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dept-report em {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.dept-report a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.dept-report a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.dept-report ul,
+.dept-report ol {
+  margin: 0 0 18px;
+  padding-left: 24px;
+}
+.dept-report li {
+  margin-bottom: 6px;
+}
+.dept-report li > p {
+  margin-bottom: 6px;
+}
+
+.dept-report blockquote {
+  margin: 20px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--accent);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.dept-report hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 36px 0;
+}
+
+.dept-report code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--paper-2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--ink);
+}
+
+.dept-report pre {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-soft);
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.dept-report pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* GFM tables — match the editorial table style used in hier-table */
+.dept-report table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 22px 0 26px;
+  font-size: 14px;
+}
+
+.dept-report thead th {
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+}
+
+.dept-report tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink);
+  vertical-align: top;
+}
+
+.dept-report tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Numeric / right-aligned columns: monospace numerals */
+.dept-report th[align='right'],
+.dept-report td[align='right'] {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.dept-report th[align='center'],
+.dept-report td[align='center'] {
+  text-align: center;
+}
+
+/* Loading + error states match the Portal loader aesthetic */
+.dept-report-loader,
+.dept-report-error {
+  max-width: 760px;
+  margin: 40px auto;
+  padding: 24px 0;
+  font-family: var(--font-mono);
+  color: var(--ink-3);
+}
+
+.dept-report-loader-title {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  margin: 0 0 10px;
+}
+
+.dept-report-error {
+  color: var(--negative);
+}
+.dept-report-error-detail {
+  color: var(--ink-3);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+@media (max-width: 720px) {
+  .dept-report {
+    font-size: 16px;
+  }
+  .dept-report h1 { font-size: 26px; }
+  .dept-report h2 { font-size: 22px; }
+  .dept-report h3 { font-size: 18px; }
+  .dept-report table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

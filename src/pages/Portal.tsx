@@ -12,6 +12,7 @@ import {
 } from '../lib/dept-data';
 import * as fmt from '../lib/format';
 import { Eyebrow, SectionHead, Spark } from '../components/shared';
+import ReportView from '../components/ReportView';
 import SiteFooter from '../components/SiteFooter';
 import SiteHeader from '../components/SiteHeader';
 import { buildColumns, buildRow, downloadCsv, filterObjects, objectsToCsv } from '../lib/csv';
@@ -28,6 +29,7 @@ const VIEW_BY_SUFFIX: Record<string, View> = {
   '/programs': 'programs',
   '/objects': 'objects',
   '/data': 'data',
+  '/report': 'report',
   '/methodology': 'methodology',
 };
 
@@ -37,6 +39,7 @@ const SUFFIX_BY_VIEW: Record<View, string> = {
   programs: '/programs',
   objects: '/objects',
   data: '/data',
+  report: '/report',
   methodology: '/methodology',
 };
 
@@ -47,7 +50,7 @@ function pathSuffix(pathname: string, deptId: string): string {
   return pathname;
 }
 
-type View = 'hierarchy' | 'byyear' | 'programs' | 'objects' | 'data' | 'methodology';
+type View = 'hierarchy' | 'byyear' | 'programs' | 'objects' | 'data' | 'report' | 'methodology';
 
 interface DownloadButtonProps {
   data: DeptData;
@@ -1930,6 +1933,7 @@ export default function Portal() {
 
   const sectionTabs: Array<[View, string]> = [
     ['hierarchy', 'Overview'],
+    ['report', 'Report'],
     ['byyear', 'By year'],
     ['programs', 'Programs'],
     ['objects', 'Objects'],
@@ -2001,10 +2005,11 @@ export default function Portal() {
           <p className="page-eyebrow">Department {deptId} · FY 2020 – 2026</p>
           <h1 className="page-title">{data.department.description}</h1>
         </div>
-        {view !== 'methodology' && view !== 'data' && (
+        {view !== 'methodology' && view !== 'data' && view !== 'report' && (
           <KpiStrip data={data} hideOnMobile={view !== 'hierarchy'} />
         )}
         {view === 'hierarchy' && <TrendChart data={data} />}
+        {view === 'report' && <ReportView key={deptId} deptId={deptId} />}
 
         {view === 'hierarchy' && (
           <HierarchyView

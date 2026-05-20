@@ -94,6 +94,7 @@ function fmtBytes(n: number): string {
 function contentTypeFor(path: string): string {
   if (path.endsWith(".parquet")) return "application/vnd.apache.parquet";
   if (path.endsWith(".json")) return "application/json";
+  if (path.endsWith(".md")) return "text/markdown; charset=utf-8";
   return "application/octet-stream";
 }
 
@@ -138,8 +139,10 @@ async function uploadDept(deptId: string, dataRoot: string, opts: Args) {
   // sources (fpaps, operating_units, fund_subcategories, expenses, objects)
   // + parquet manifest. Keeps the existing dept-data.ts loader working
   // against R2 unchanged.
+  // REPORT.md is the only .md surfaced to the CDN — REPORT_PROMPT.md is the
+  // internal LLM generation prompt and stays local.
   for (const name of readdirSync(deptRoot)) {
-    if (!name.endsWith(".json")) continue;
+    if (!name.endsWith(".json") && name !== "REPORT.md") continue;
     const p = resolve(deptRoot, name);
     if (statSync(p).isFile()) items.push({ local: p, key: `${deptId}/${name}` });
   }
